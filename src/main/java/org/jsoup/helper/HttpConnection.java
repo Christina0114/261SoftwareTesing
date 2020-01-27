@@ -20,9 +20,11 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.Field;
 import java.net.HttpURLConnection;
 import java.net.InetSocketAddress;
 import java.net.MalformedURLException;
+import java.net.ProtocolException;
 import java.net.Proxy;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -894,8 +896,7 @@ public class HttpConnection implements Connection {
                 req.url().openConnection() :
                 req.url().openConnection(req.proxy())
             );
-
-            conn.setRequestMethod(req.method().name());
+            setMethod(req.method(), conn);
             conn.setInstanceFollowRedirects(false); // don't rely on native redirection support
             conn.setConnectTimeout(req.timeout());
             conn.setReadTimeout(req.timeout() / 2); // gets reduced after connection is made and status is read
@@ -912,6 +913,34 @@ public class HttpConnection implements Connection {
                 }
             }
             return conn;
+        }
+
+        // this is a hack attempt at allowing PATCH. It catches the missing prototcol ex from HttpURLConnection, and
+        // then tries to allow the private field to be written. But that is gross and brittle, and warns heavily on
+        // Java 9 (and I expect fails in Java 12)
+        private static void setMethod(Method method, HttpURLConnection conn) throws ProtocolException {
+            final String methodName = method.name();
+            try {
+                conn.setRequestMethod(methodName);
+            } catch (java.net.ProtocolException ex) {
+                try {
+                    final Object target;
+                    // is https, will be a sun.net.www.protocol.https.HttpsURLConnectionImpl, but that's not imported
+                    if (conn instanceof HttpsURLConnection) {
+                        final Field delegate = conn.getClass().getDeclaredField("delegate");
+                        delegate.setAccessible(true);
+                        target = delegate.get(conn);
+                    } else {
+                        target = conn;
+                    }
+                    final Field f = HttpURLConnection.class.getDeclaredField("method");
+                    f.setAccessible(true);
+                    f.set(target, methodName);
+                } catch (IllegalAccessException | NoSuchFieldException exx) {
+                    // wasn't able to patch in the missing PATCH method, throw the original protocol ex
+                    throw ex;
+                }
+            }
         }
 
         /**

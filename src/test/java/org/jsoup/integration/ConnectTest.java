@@ -503,4 +503,18 @@ public class ConnectTest {
         assertEquals(text, docFromLocalServer.body().text());
         assertEquals(text, docFromFileRead.body().text());
     }
+
+    @Test
+    public void handlesAllMethodTypes() throws IOException {
+        for (Connection.Method method : Connection.Method.values()) {
+            System.out.println("Try " + method);
+            Connection.Response res = Jsoup.connect(EchoServlet.Url).method(method).execute();
+            Document doc = res.parse();
+
+            if (method == Connection.Method.HEAD)
+                continue; // no body, but parse still worked
+
+            assertEquals(method.name(), ihVal("Method", doc));
+        }
+    }
 }

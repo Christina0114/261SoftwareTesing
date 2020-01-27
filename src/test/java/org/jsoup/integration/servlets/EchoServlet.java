@@ -25,18 +25,9 @@ public class EchoServlet extends BaseServlet {
     private static final int DefaultCode = HttpServletResponse.SC_OK;
 
     @Override
-    protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-        doIt(req, res);
-    }
-
-    @Override
-    protected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-        doIt(req, res);
-    }
-
-    @Override
-    protected void doPut(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
-        doIt(req, res);
+    // Generic handler to support PATCH as well
+    protected void service(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        doIt(req, resp);
     }
 
     private void doIt(HttpServletRequest req, HttpServletResponse res) throws IOException, ServletException {
