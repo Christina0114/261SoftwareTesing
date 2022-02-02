@@ -77,5 +77,5 @@ public class TagTestAdd {
         assertTrue(template.isBlock());
     }
 
-    // 8 test cases added
+    // 8 test cases added for 4 group
 }
