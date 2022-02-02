@@ -56,9 +56,7 @@ The original project uses Junit Test. Here we use the maven test command line to
 
 ### Explore Existing Test Cases
 
-
-
-Jsoup has six main packages and each package has their own test cases:
+From Jsoup website, Jsoup has six main packages and each package has their own test cases:
 
 | [**org.jsoup.helper**](https://jsoup.org/apidocs/org/jsoup/helper/package-summary.html)     | Package containing classes supporting the core jsoup code.        |
 | ------------------------------------------------------------------------------------------- | ----------------------------------------------------------------- |
@@ -105,19 +103,12 @@ Pick some test cases in the  TagTest for example:
         Tag script2 = Tag.valueOf("SCRIPT", ParseSettings.htmlDefault);
         assertSame(script1, script2);
     }
-
 ```
 
 An HTML tag is a piece of markup language used to indicate the beginning and end of an [HTML element](https://www.digitalocean.com/community/tutorials/what-is-an-html-element) in an HTML document. Here, it tests the boundary values like null and empty. And also it tests if the ```Tag``` is sensitvie to upper case and lower case.
 
 
 
-
-
-Also, 
-
 Besides, it has an integration test for the purposes of testing timeouts and interrupts.
 
-Integration testis defined as a type of testing where software modules are integrated logically and tested as a group.
-
-
+Integration testing defined as a type of testing where software modules are integrated logically and tested as a group.
