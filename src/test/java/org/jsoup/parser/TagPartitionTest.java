@@ -110,7 +110,7 @@ public class TagPartitionTest {
     }
 
     /**
-     for Inline tags: main
+     for Inline tags: span
      */
     @Test public void spanSemantics() {
         Tag span = Tag.valueOf("span");
@@ -146,6 +146,9 @@ public class TagPartitionTest {
         assertFalse(colgroup.isInline());
         assertFalse(colgroup.isSelfClosing());
         assertTrue(colgroup.isBlock());
+        assertFalse(colgroup.isInline());
+        assertFalse(colgroup.isFormListed());
+        assertFalse(colgroup.isFormSubmittable());
     }
 
     @Test public void theadSemantics() {
@@ -153,6 +156,9 @@ public class TagPartitionTest {
         assertFalse(thead.isInline());
         assertFalse(thead.isSelfClosing());
         assertTrue(thead.isBlock());
+        assertFalse(thead.isInline());
+        assertFalse(thead.isFormListed());
+        assertFalse(thead.isFormSubmittable());
     }
 
     @Test public void tdSemantics() {
@@ -160,6 +166,9 @@ public class TagPartitionTest {
         assertFalse(td.isInline());
         assertFalse(td.isSelfClosing());
         assertTrue(td.isBlock());
+        assertFalse(td.isInline());
+        assertFalse(td.isFormListed());
+        assertFalse(td.isFormSubmittable());
     }
 
     /**
@@ -170,6 +179,9 @@ public class TagPartitionTest {
         assertTrue(legend.isInline());
         assertFalse(legend.isSelfClosing());
         assertFalse(legend.isBlock());
+        assertTrue(legend.isInline());
+        assertFalse(legend.isFormListed());
+        assertFalse(legend.isFormSubmittable());
     }
 
     @Test public void selectSemantics() {
@@ -177,6 +189,9 @@ public class TagPartitionTest {
         assertTrue(select.isInline());
         assertFalse(select.isSelfClosing());
         assertFalse(select.isBlock());
+        assertTrue(select.isInline());
+        assertTrue(select.isFormListed());
+        assertTrue(select.isFormSubmittable());
     }
 
     /**
@@ -187,22 +202,20 @@ public class TagPartitionTest {
         assertTrue(summary.isInline());
         assertFalse(summary.isSelfClosing());
         assertFalse(summary.isBlock());
+        assertTrue(summary.isInline());
+        assertFalse(summary.isFormListed());
+        assertFalse(summary.isFormSubmittable());
     }
     @Test public void detailsSemantics() {
         Tag details = Tag.valueOf("details");
         assertFalse(details.isInline());
         assertFalse(details.isSelfClosing());
         assertTrue(details.isBlock());
+        assertFalse(details.isInline());
+        assertFalse(details.isFormListed());
+        assertFalse(details.isFormSubmittable());
     }
-    /**
-     * for web group
-     */
-    @Test public void templateSemantics() {
-        Tag template = Tag.valueOf("template");
-        assertFalse(template.isInline());
-        assertFalse(template.isSelfClosing());
-        assertTrue(template.isBlock());
-    }
+
     /*
          Multimedia Tags
         */
