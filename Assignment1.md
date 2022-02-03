@@ -245,11 +245,11 @@ mvn test -D test=org.jsoup.parser.TagPartitionTest
 | Embedded Contents        | \<iframe>、\<embed>、\<object>            |
 | Script                   | \<canvas>、\<script>                     |
 | Edit                     | \<del>、\<ins>                           |
-| Table content            | \<thead>、, \<colgroup>、\<td>            |
+| Table content            | \<thead>、 \<colgroup>、\<td>             |
 | Table                    | \<legend>、 \<select>                    |
 | Interactive element      | \<details>、\<summary>、\<dialog>、\<menu> |
 | Web                      | \<template>                             |
-| Deprecated               | \<acronym>、 \<font> \<keygen>           |
+| Deprecated               | \<acronym>、 \<font>、 \<keygen>          |
 
 ### Findings
 
