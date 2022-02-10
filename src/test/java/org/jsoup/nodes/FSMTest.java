@@ -8,7 +8,6 @@ import org.junit.jupiter.params.provider.CsvSource;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class FSMTest {
-
     /**
      * SWE261P - Finite Model Testing
      *
@@ -154,5 +153,6 @@ public class FSMTest {
         div.removeClass("class2");
         assertEquals(div.toString(),"<" + tag + "></" + tag + ">");
     }
+
 
 }
