@@ -27,13 +27,16 @@ public class FSMTest {
         div.addClass("class1");
         assertEquals(div.toString(),"<" + tag + " class=\"class1\"></" + tag + ">");
 
-        div.addClass("class1");
+        div.addClass("class1"); // self-edge
         assertEquals(div.toString(),"<" + tag + " class=\"class1\"></" + tag + ">");
 
         div.addClass("class2");
         assertEquals(div.toString(),"<" + tag + " class=\"class1 class2\"></" + tag + ">");
 
-        div.addClass("class1");
+        div.addClass("class1"); // self-edge
+        assertEquals(div.toString(),"<" + tag + " class=\"class1 class2\"></" + tag + ">");
+
+        div.addClass("class2"); // self-edge
         assertEquals(div.toString(),"<" + tag + " class=\"class1 class2\"></" + tag + ">");
 
         div.removeAttr("class");
@@ -88,17 +91,26 @@ public class FSMTest {
         Document doc = Jsoup.parse(html);
         Element div = doc.select(tag).first();
 
-        /*
-        reset the class1 to empty
-         */
+        // reset the no class to empty
+        div.removeAttr("class");    // self-edge
+        assertEquals(div.toString(),"<" + tag + "></" + tag + ">");
+
+        // reset the class1 to empty
         div.addClass("class1");
+        assertEquals(div.toString(),"<" + tag + " class=\"class1\"></" + tag + ">");
         div.removeAttr("class");
         assertEquals(div.toString(),"<" + tag + "></" + tag + ">");
 
-        /*
-        reset the class2 to empty
-         */
+        // reset the class2 to empty
         div.addClass("class2");
+        assertEquals(div.toString(),"<" + tag + " class=\"class2\"></" + tag + ">");
+        div.removeAttr("class");
+        assertEquals(div.toString(),"<" + tag + "></" + tag + ">");
+
+        // reset the class1 and class2 to empty
+        div.addClass("class1");
+        div.addClass("class2");
+        assertEquals(div.toString(),"<" + tag + " class=\"class1 class2\"></" + tag + ">");
         div.removeAttr("class");
         assertEquals(div.toString(),"<" + tag + "></" + tag + ">");
     }
@@ -135,22 +147,24 @@ public class FSMTest {
         Document doc = Jsoup.parse(html);
         Element div = doc.select(tag).first();
 
-        /*
-        remove with 2 original classes
-         */
+        // start with 2 original classes
         div.addClass("class1");
         div.addClass("class2");
+        assertEquals(div.toString(),"<" + tag + " class=\"class1 class2\"></" + tag + ">");
 
         div.removeClass("class1");
         assertEquals(div.toString(),"<" + tag + " class=\"class2\"></" + tag + ">");
 
-        /*
-        * test for self edge
-        * */
-        div.removeClass("class1");
+        div.removeClass("class1");  // self-edge
         assertEquals(div.toString(),"<" + tag + " class=\"class2\"></" + tag + ">");
 
         div.removeClass("class2");
+        assertEquals(div.toString(),"<" + tag + "></" + tag + ">");
+
+        div.removeClass("class1");  // self-edge
+        assertEquals(div.toString(),"<" + tag + "></" + tag + ">");
+
+        div.removeClass("class2");  // self-edge
         assertEquals(div.toString(),"<" + tag + "></" + tag + ">");
     }
 
