@@ -8,8 +8,6 @@ import org.junit.jupiter.params.provider.CsvSource;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class FSMTest {
-
-
     /**
      * SWE261P - Finite Model Testing
      *
@@ -104,5 +102,57 @@ public class FSMTest {
         div.removeAttr("class");
         assertEquals(div.toString(),"<" + tag + "></" + tag + ">");
     }
+
+    @ParameterizedTest
+    @CsvSource({"<div></div>, div", "<p></p>, p", "<h></h>, h", "<title></title>, title", "<footer></footer>, footer"})
+    void testAddClass2(String html, String tag){
+        Document doc = Jsoup.parse(html);
+        Element div = doc.select(tag).first();
+
+        div.addClass("class2");
+        assertEquals(div.toString(),"<" + tag + " class=\"class2\"></" + tag + ">");
+
+        /*
+         * test for self edge
+         * */
+        div.addClass("class2");
+        assertEquals(div.toString(),"<" + tag + " class=\"class2\"></" + tag + ">");
+
+        div.addClass("class1");
+        assertEquals(div.toString(),"<" + tag + " class=\"class2 class1\"></" + tag + ">");
+
+        /*
+        * test for self edge
+        * */
+        div.addClass("class2");
+        assertEquals(div.toString(),"<" + tag + " class=\"class2 class1\"></" + tag + ">");
+    }
+
+
+    @ParameterizedTest
+    @CsvSource({"<div></div>, div", "<p></p>, p", "<h></h>, h", "<title></title>, title", "<footer></footer>, footer"})
+    void testRemoveClass2(String html, String tag){
+        Document doc = Jsoup.parse(html);
+        Element div = doc.select(tag).first();
+
+        /*
+        remove with 2 original classes
+         */
+        div.addClass("class1");
+        div.addClass("class2");
+
+        div.removeClass("class1");
+        assertEquals(div.toString(),"<" + tag + " class=\"class2\"></" + tag + ">");
+
+        /*
+        * test for self edge
+        * */
+        div.removeClass("class1");
+        assertEquals(div.toString(),"<" + tag + " class=\"class2\"></" + tag + ">");
+
+        div.removeClass("class2");
+        assertEquals(div.toString(),"<" + tag + "></" + tag + ">");
+    }
+
 
 }
