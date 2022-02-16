@@ -5,7 +5,6 @@ import org.jsoup.parser.Tag;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -21,9 +20,9 @@ public class newTest {
         String v = "hello";
         Attribute a = new Attribute(k,v);
         // map and cloneable
-        System.out.println(a.toString());
+//        System.out.println(a.toString());
         Attribute b = Attribute.createFromEncoded("/w","hello");
-        System.out.println(b.toString());
+//        System.out.println(b.toString());
         Assertions.assertEquals(a.toString(),b.toString());
         Document out = new Document("www.baidu.com");
         boolean iscoll = a.shouldCollapseAttribute(out.outputSettings());
@@ -35,7 +34,7 @@ public class newTest {
         String v = "hello";
         Attribute a = new Attribute(k,v);
         // map and cloneable
-        System.out.println(a.toString());
+//        System.out.println(a.toString());
         Document out = new Document("www.baidu.com");
         boolean iscoll = a.shouldCollapseAttribute(out.outputSettings());
         Assertions.assertFalse(iscoll);
@@ -48,7 +47,7 @@ public class newTest {
         Attribute sameAtt = new Attribute(k,v);
         Attribute diffAtt = new Attribute("neww",v);
         // map and cloneable
-        System.out.println(a.toString());
+//        System.out.println(a.toString());
         String t = "fs";
         Document out = new Document("www.baidu.com");
         Assertions.assertFalse(a.equals(t));
@@ -62,8 +61,10 @@ public class newTest {
         String v = "hello";
         Attribute a = new Attribute(k,v);
         int hashAtt = a.hashCode();
-        System.out.println(hashAtt);
+//        System.out.println(hashAtt);
+        assertEquals(99166011, hashAtt);
     }
+
     @Test
     public void testClone() {
         String k = "class";
@@ -81,16 +82,16 @@ public class newTest {
     public void testDocumentEasyNor() {
     Document d = new Document("www.example.com");
     Document newD = d.normalise();
-    System.out.println(d.html());
-    System.out.println(newD.html());
+//    System.out.println(d.html());
+//    System.out.println(newD.html());
     }
 
     @Test
     public void testDocumentComplicatedNor() {
         Document d = new Document("www.baidu.com");
         Document newD = d.normalise();
-        System.out.println(d.html());
-        System.out.println(newD.html());
+//        System.out.println(d.html());
+//        System.out.println(newD.html());
     }
     /**
      * Test for tag
@@ -106,14 +107,14 @@ public class newTest {
         Tag p2 = p1;
         String tagName1 = p1.toString();
         String tagName2 = p2.toString();
-        System.out.println(tagName1 +"  "+tagName2);
+//        System.out.println(tagName1 +"  "+tagName2);
         Boolean result = p1.equals(p2);
         assertTrue(p1.equals(p2));
     }
 
 
     /**
-     *  Element coverage tests
+     *  Test for Element
      */
     @Test void elementByAttributesStarting(){
         Document doc = Jsoup.parse("<div><span class=' mellow yellow '>Hello <b>Yellow</b></span></div>");
@@ -160,88 +161,76 @@ public class newTest {
 
 
 
-    //Covers self closing start tag condition under tokenzier state.
+    /***
+     *  Test for TokenizerState
+     */
     @Test public void testIsValidWithMisshapedTagEnds() {
         String nok1 = "<p><script></script/Not<b>OK</b></p>";
         Safelist sl = Safelist.basic();
         assertFalse(Jsoup.isValid(nok1, sl));
     }
 
-
-    /***
-     *  Tokenizer state coverage test
-     */
     @Test public void testScriptDataState() {
         Document doc = Jsoup.parse("<script><!-- one <script>\u0000</script> --></script>");
         assertEquals("", doc.select("script").first().text());
-    }
 
-    @Test public void testScriptDataState2() {
-        Document doc = Jsoup.parse("<script><!-- one <script></script> --></script>");
+        doc = Jsoup.parse("<script><!-- one <script></script> --></script>");
         assertEquals("", doc.select("script").first().text());
     }
 
+
+    /***
+     *  TokenizerState: Tokenizer states handling script element and escape
+     */
     @Test public void handlesEscapedScript() {
+        // Escape inside script
         Document doc = Jsoup.parse("<script><!-- one <script>-lah</script> --></script>");
         assertEquals("<!-- one <script>-lah</script> -->", doc.select("script").first().data());
-    }
 
-    @Test public void handlesEOFScript() {
-        Document doc = Jsoup.parse("<script><!-- one <script>");
+        // EOF
+        doc = Jsoup.parse("<script><!-- one <script>");
         assertEquals("<!-- one <script>", doc.select("script").first().data());
+
+        // Double-escaped
+        doc = Jsoup.parse("<script><!-- one <script>--lah</script> --></script>");
+        assertEquals("<!-- one <script>--lah</script> -->", doc.select("script").first().data());
+
+        // "<" after escape
+        doc = Jsoup.parse("<script><!-- one <script>-<lah</script> --></script>");
+        assertEquals("<!-- one <script>-<lah</script> -->", doc.select("script").first().data());
+
+        // nullChar after escape
+        doc = Jsoup.parse("<script><!-- one <script>-\u0000lah</script> --></script>");
+        assertEquals("", doc.select("script").first().text());
+
+        //Escaped and EOF
+        doc = Jsoup.parse("<script><!-- one <script>-");
+        assertEquals("", doc.select("script").first().text());
     }
 
     @Test public void handlesDoubleEscapedScript() {
-        Document doc = Jsoup.parse("<script><!-- one <script>--lah</script> --></script>");
-        assertEquals("<!-- one <script>--lah</script> -->", doc.select("script").first().data());
-    }
-
-    @Test public void handlesScriptDataDoubleEscapedLessthanSign() {
-        Document doc = Jsoup.parse("<script><!-- one <script>-<lah</script> --></script>");
-        assertEquals("<!-- one <script>-<lah</script> -->", doc.select("script").first().data());
-    }
-
-    @Test public void handleScriptDataDoubleEscaped() {
-        Document doc = Jsoup.parse("<script><!-- one <script>-\u0000lah</script> --></script>");
-        assertEquals("", doc.select("script").first().text());
-    }
-    @Test public void handleScriptDataEscapedAndEOF() {
-        Document doc = Jsoup.parse("<script><!-- one <script>-");
-        assertEquals("", doc.select("script").first().text());
-    }
-
-    @Test public void handlesDoubleEscapedDashDash() {
+        // another -
         Document doc = Jsoup.parse("<script><!-- one <script>---lah</script> --></script>");
         assertEquals("<!-- one <script>---lah</script> -->", doc.select("script").first().data());
-    }
 
-    @Test public void handlesDoubleEscapedDashDash2() {
-        Document doc = Jsoup.parse("<script><!-- one <script>---lah</script> --></script>");
-        assertEquals("<!-- one <script>---lah</script> -->", doc.select("script").first().data());
-    }
-
-    @Test public void handlesDoubleEscapedDashDash3() {
-        Document doc = Jsoup.parse("<script><!-- one <script>--<lah</script> --></script>");
+        // < after escape
+        doc = Jsoup.parse("<script><!-- one <script>--<lah</script> --></script>");
         assertEquals("<!-- one <script>--<lah</script> -->", doc.select("script").first().data());
-    }
 
-    @Test public void handlesDoubleEscapedDashDash4() {
-        Document doc = Jsoup.parse("<script><!-- one <script>-->lah</script> --></script>");
+        // > after escape
+        doc = Jsoup.parse("<script><!-- one <script>-->lah</script> --></script>");
         assertEquals("<!-- one <script>-->lah", doc.select("script").first().data());
-    }
 
-    @Test public void handlesDoubleEscapedDashDash5() {
-        Document doc = Jsoup.parse("<script><!-- one <script>---\u0000lah</script> --></script>");
+        // nullChar after escape
+        doc = Jsoup.parse("<script><!-- one <script>---\u0000lah</script> --></script>");
         assertEquals("", doc.select("script").first().text());
-    }
 
-    @Test public void handlesDoubleEscapedDashDash6() {
-        Document doc = Jsoup.parse("<script><!-- one <script>--");
+        // EOF after escape
+        doc = Jsoup.parse("<script><!-- one <script>--");
         assertEquals("<!-- one <script>--", doc.select("script").first().data());
-    }
 
-    @Test public void handlesDoubleEscapedDashDash7() {
-        Document doc = Jsoup.parse("<script><!-- one <script>--Blah</script> --></script>");
+        // default escape
+        doc = Jsoup.parse("<script><!-- one <script>--Blah</script> --></script>");
         assertEquals("<!-- one <script>--Blah</script> -->", doc.select("script").first().data());
     }
 }
