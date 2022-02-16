@@ -1,42 +1,26 @@
 package org.jsoup.nodes;
 
 import org.jsoup.Jsoup;
-import org.jsoup.select.Elements;
+import org.jsoup.safety.Safelist;
 import org.junit.jupiter.api.Test;
-
 import java.util.List;
-import java.util.regex.PatternSyntaxException;
+
 
 import static org.junit.jupiter.api.Assertions.*;
 
 public class newTest {
 
 
-    @Test
-    public void hasAssociatedControls() {
-        //"button", "fieldset", "input", "keygen", "object", "output", "select", "textarea"
-        String html = "<form id=1><button id=1><fieldset id=2 /><input id=3><keygen id=4><object id=5><output id=6>" +
-                "<select id=7><option></select><textarea id=8><p id=9>";
-        Document doc = Jsoup.parse(html);
-
-        FormElement form = (FormElement) doc.select("form").first();
-        assertEquals(8, form.elements().size());
-    }
-
-
     /**
      *  Element coverage tests
      */
-    /////// Elements with attribute starting
-    /// Adding... getElementsByAttributeStarting
-    @Test void elementWithAttributesStarting(){
+    @Test void elementByAttributesStarting(){
         Document doc = Jsoup.parse("<div><span class=' mellow yellow '>Hello <b>Yellow</b></span></div>");
         List<Element> els = doc.getElementsByAttributeStarting("cl");
         Element span = els.get(0);
         assertTrue(span.hasClass("mellow"));
     }
 
-    /////// Elements with attribute by value
     @Test void elementsByAttributeValue(){
         Document doc = Jsoup.parse(
                 "<span class='class1'>Hello</span>" +
@@ -59,7 +43,6 @@ public class newTest {
         assertTrue(span.hasAttr("style"));
     }
 
-
     @Test void elementsByText(){
         Document doc = Jsoup.parse(
                 "<span class='class1'>Hello</span>" +
@@ -74,11 +57,91 @@ public class newTest {
         assertTrue(span.hasClass("myclass2"));
     }
 
-    //TODO: get by index
-    @Test public void handlesEscapedScript2() {
-//        Document doc = Jsoup.parse("<script><!-- one <script>-lah</script> --></script>");
+
+
+    //Covers self closing start tag condition under tokenzier state.
+    @Test public void testIsValidWithMisshapedTagEnds() {
+        String nok1 = "<p><script></script/Not<b>OK</b></p>";
+        Safelist sl = Safelist.basic();
+        assertFalse(Jsoup.isValid(nok1, sl));
+    }
+
+
+    /***
+     *  Tokenizer state coverage test
+     */
+    @Test public void testScriptDataState() {
+        Document doc = Jsoup.parse("<script><!-- one <script>\u0000</script> --></script>");
+        assertEquals("", doc.select("script").first().text());
+    }
+
+    @Test public void testScriptDataState2() {
+        Document doc = Jsoup.parse("<script><!-- one <script></script> --></script>");
+        assertEquals("", doc.select("script").first().text());
+    }
+
+    @Test public void handlesEscapedScript() {
+        Document doc = Jsoup.parse("<script><!-- one <script>-lah</script> --></script>");
+        assertEquals("<!-- one <script>-lah</script> -->", doc.select("script").first().data());
+    }
+
+    @Test public void handlesEOFScript() {
         Document doc = Jsoup.parse("<script><!-- one <script>");
-        assertEquals("<!-- one <script>Blah</script> -->", doc.select("script").first().data());
+        assertEquals("<!-- one <script>", doc.select("script").first().data());
+    }
+
+    @Test public void handlesDoubleEscapedScript() {
+        Document doc = Jsoup.parse("<script><!-- one <script>--lah</script> --></script>");
+        assertEquals("<!-- one <script>--lah</script> -->", doc.select("script").first().data());
+    }
+
+    @Test public void handlesScriptDataDoubleEscapedLessthanSign() {
+        Document doc = Jsoup.parse("<script><!-- one <script>-<lah</script> --></script>");
+        assertEquals("<!-- one <script>-<lah</script> -->", doc.select("script").first().data());
+    }
+
+    @Test public void handleScriptDataDoubleEscaped() {
+        Document doc = Jsoup.parse("<script><!-- one <script>-\u0000lah</script> --></script>");
+        assertEquals("", doc.select("script").first().text());
+    }
+    @Test public void handleScriptDataEscapedAndEOF() {
+        Document doc = Jsoup.parse("<script><!-- one <script>-");
+        assertEquals("", doc.select("script").first().text());
+    }
+
+    @Test public void handlesDoubleEscapedDashDash() {
+        Document doc = Jsoup.parse("<script><!-- one <script>---lah</script> --></script>");
+        assertEquals("<!-- one <script>---lah</script> -->", doc.select("script").first().data());
+    }
+
+    @Test public void handlesDoubleEscapedDashDash2() {
+        Document doc = Jsoup.parse("<script><!-- one <script>---lah</script> --></script>");
+        assertEquals("<!-- one <script>---lah</script> -->", doc.select("script").first().data());
+    }
+
+    @Test public void handlesDoubleEscapedDashDash3() {
+        Document doc = Jsoup.parse("<script><!-- one <script>--<lah</script> --></script>");
+        assertEquals("<!-- one <script>--<lah</script> -->", doc.select("script").first().data());
+    }
+
+    @Test public void handlesDoubleEscapedDashDash4() {
+        Document doc = Jsoup.parse("<script><!-- one <script>-->lah</script> --></script>");
+        assertEquals("<!-- one <script>-->lah", doc.select("script").first().data());
+    }
+
+    @Test public void handlesDoubleEscapedDashDash5() {
+        Document doc = Jsoup.parse("<script><!-- one <script>---\u0000lah</script> --></script>");
+        assertEquals("", doc.select("script").first().text());
+    }
+
+    @Test public void handlesDoubleEscapedDashDash6() {
+        Document doc = Jsoup.parse("<script><!-- one <script>--");
+        assertEquals("<!-- one <script>--", doc.select("script").first().data());
+    }
+
+    @Test public void handlesDoubleEscapedDashDash7() {
+        Document doc = Jsoup.parse("<script><!-- one <script>--Blah</script> --></script>");
+        assertEquals("<!-- one <script>--Blah</script> -->", doc.select("script").first().data());
     }
 }
 
