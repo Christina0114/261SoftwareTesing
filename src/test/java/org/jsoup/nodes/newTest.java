@@ -82,16 +82,16 @@ public class newTest {
     public void testDocumentEasyNor() {
     Document d = new Document("www.example.com");
     Document newD = d.normalise();
-//    System.out.println(d.html());
-//    System.out.println(newD.html());
+    System.out.println(d.html());
+    System.out.println(newD.html());
     }
 
     @Test
     public void testDocumentComplicatedNor() {
         Document d = new Document("www.baidu.com");
         Document newD = d.normalise();
-//        System.out.println(d.html());
-//        System.out.println(newD.html());
+        System.out.println(d.html());
+        System.out.println(newD.html());
     }
     /**
      * Test for tag
@@ -108,7 +108,6 @@ public class newTest {
         String tagName1 = p1.toString();
         String tagName2 = p2.toString();
 //        System.out.println(tagName1 +"  "+tagName2);
-        Boolean result = p1.equals(p2);
         assertTrue(p1.equals(p2));
     }
 
