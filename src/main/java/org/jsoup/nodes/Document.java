@@ -107,6 +107,13 @@ public class Document extends Element {
         }
         return appendElement("html");
     }
+    public Element htmlElNew() {
+        for (Element el: childElementsList()) {
+            if (el.normalName().equals("html"))
+                return el;
+        }
+        return appendElement("html");
+    }
 
     /**
      Get this document's {@code head} element.
