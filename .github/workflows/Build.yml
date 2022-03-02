@@ -29,16 +29,10 @@ jobs:
       - name: Maven Compile
         run: mvn -X compile -B --file pom.xml
 
-<<<<<<< HEAD
-      - name: Maven Compile
-=======
       - name: Maven Test
->>>>>>> eda2f9f2ad3d1df527354c4a1c6c2f7e5942ed45
+
         run: mvn -X test -B --file pom.xml
 
       - name: Maven Verify
         run: mvn -X verify -B --file pom.xml
-<<<<<<< HEAD
-...
-=======
->>>>>>> eda2f9f2ad3d1df527354c4a1c6c2f7e5942ed45
+
