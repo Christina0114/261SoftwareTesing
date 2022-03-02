@@ -30,7 +30,9 @@ jobs:
         run: mvn -X compile -B --file pom.xml
 
       - name: Maven Test
+
         run: mvn -X test -B --file pom.xml
 
       - name: Maven Verify
         run: mvn -X verify -B --file pom.xml
+
